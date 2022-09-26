@@ -1,0 +1,4 @@
+{
+  // copy/paste this file into default config path "config.json5"
+  exampleConfigValue: "test",
+}
