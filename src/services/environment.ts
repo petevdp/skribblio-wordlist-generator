@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 
 const EnvironmentCodec = t.type({
-  NODE_ENV: t.string
+  NODE_ENV: t.union([t.string, t.undefined]),
 });
 export type Environment = t.TypeOf<typeof EnvironmentCodec>;
 export let environment: Environment;

@@ -3,20 +3,38 @@ import * as t from 'io-ts';
 
 
 const OptionsCodec = t.type({
-  'config': t.string
+  url: t.string,
+  wordCount: t.number,
+  maxPages: t.number,
+  outFile: t.union([t.string,t.undefined]),
+  skipNthCommon: t.number
 });
 
 type Options = t.TypeOf<typeof OptionsCodec>;
 
-export let options: Options;
+export let cliOptions: Options;
 
 export function setupCli() {
+  const defaults: Partial<Options> = {
+    wordCount: 300,
+    maxPages: 50,
+    skipNthCommon: 20
+  }
+
   program
-    .option('--config', 'path of configuration file', './config.json5');
+    .argument('<url>', 'path to visit')
+    .option('-w, --word-count <num>', `number of words to return. default: ${defaults.wordCount}`, parseInt)
+    .option('-m, --max-pages <num>', `upper limit for pages to crawl. default: ${defaults.maxPages}`, parseInt)
+    .option('-s --skip-nth-common <num>');
 
   program.parse();
 
   let opts = program.opts();
+  opts = {
+    ...defaults,
+    ...opts,
+    url: program.args[0]
+  }
   const decoded = OptionsCodec.decode(opts);
 
   if (decoded._tag === 'Left') {
@@ -26,7 +44,7 @@ export function setupCli() {
     }
     throw new Error('Invalid options! see above warnings for details');
   }
-  options = opts as Options;
+  cliOptions = opts as Options;
 }
 
 

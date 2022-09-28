@@ -107,35 +107,49 @@ export function setupLogger() {
     defaultMeta: { context: 'default' },
     transports: [
       new winston.transports.File({
-        filename: './logs/error.log',
-        handleExceptions: true,
-        level: 'error'
-      }),
-      new winston.transports.File({
         filename: './logs/combined.log',
         handleExceptions: true
       })
     ]
   });
 
-  if (environment.NODE_ENV !== 'production') {
-    const pipeFormat = format((info: any, opts: any) => {
-      let line = `$${info.level}|${info.metadata.context}|${info.message}`;
-      if (info.error) {
-        line += `\n${info.error}\n`;
-      }
-      info[MESSAGE] = line;
-      return info;
-    });
-    const consoleFormat = format.combine(
-      format.colorize(),
-      pipeFormat()
+  const pipeFormat = format((info: any, opts: any) => {
+    let line = `$${info.level}|${info.metadata.context}|${info.message}`;
+    if (info.error) {
+      line += `\n${info.error}\n`;
+    }
+    info[MESSAGE] = line;
+    return info;
+  });
+  const consoleFormat = format.combine(
+    format.colorize(),
+    pipeFormat()
+  );
+
+
+  // write console logs to tty so we don't pollute stdout
+  logger.add(new winston.transports.File({
+    filename: '/dev/tty',
+    format: consoleFormat
+  }));
+
+  if (environment.NODE_ENV === 'development') {
+
+    logger.add(
+      new winston.transports.File({
+        filename: './logs/error.log',
+        handleExceptions: true,
+        level: 'error'
+      })
+    );
+    logger.add(
+      new winston.transports.File({
+        filename: './logs/error.log',
+        handleExceptions: true,
+        level: 'error'
+      })
     );
 
 
-    logger.add(new winston.transports.Console({
-      format: consoleFormat,
-      debugStdout: true
-    }));
   }
 }

@@ -5,7 +5,7 @@
     "outDir": "build/main",
     "rootDir": ".",
     "moduleResolution": "node",
-    "module": "commonjs",
+    "module": "es2020",
     "declaration": true,
     "inlineSourceMap": true,
     "allowJs": true,
@@ -39,14 +39,17 @@
     /* Print names of generated files part of the compilation. */,
     "listFiles": false
     /* Print names of files part of the compilation. */,
-    "pretty": true
-    /* Stylize errors and messages using color and context. */,
+    "skipLibCheck": true,
+    "pretty": true,
+    "baseUrl": "./src",
+    /* Stylize errors and messages using color and context. */
     /* Experimental Options */
     // "experimentalDecorators": true /* Enables experimental support for ES7 decorators. */,
     // "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */,
 
     "lib": [
-      "esnext"
+      "esnext",
+      "dom"
     ],
     "types": [
       "node"
