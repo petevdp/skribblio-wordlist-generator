@@ -1,6 +1,4 @@
 import * as t from 'io-ts';
-import dotenv from 'dotenv';
-
 
 const EnvironmentCodec = t.type({
   NODE_ENV: t.union([t.string, t.undefined]),
@@ -9,7 +7,6 @@ export type Environment = t.TypeOf<typeof EnvironmentCodec>;
 export let environment: Environment;
 
 export function setupEnvironment() {
-  dotenv.config();
   const decoded = EnvironmentCodec.decode(process.env);
 
   if (decoded._tag === 'Left') {

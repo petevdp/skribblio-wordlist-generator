@@ -77,7 +77,7 @@ export class MetadataError extends Error {
 }
 
 
-export let logger: LoggerWithMeta<LoggerMetadata>;
+export let defaultLogger: LoggerWithMeta<LoggerMetadata>;
 
 
 // const makeSerializable = (obj: any) => ({ })
@@ -96,7 +96,7 @@ export const ppObj = (obj: any) => prettyPrint(makeSerializable(obj), {
 
 export function setupLogger() {
 
-  logger = winston.createLogger({
+  defaultLogger = winston.createLogger({
     level: 'debug',
     format: format.combine(
       format.timestamp(),
@@ -104,13 +104,7 @@ export function setupLogger() {
       format.errors(),
       format.json()
     ),
-    defaultMeta: { context: 'default' },
-    transports: [
-      new winston.transports.File({
-        filename: './logs/combined.log',
-        handleExceptions: true
-      })
-    ]
+    defaultMeta: { context: 'default' }
   });
 
   const pipeFormat = format((info: any, opts: any) => {
@@ -128,28 +122,25 @@ export function setupLogger() {
 
 
   // write console logs to tty so we don't pollute stdout
-  logger.add(new winston.transports.File({
+  defaultLogger.add(new winston.transports.File({
     filename: '/dev/tty',
     format: consoleFormat
   }));
 
   if (environment.NODE_ENV === 'development') {
-
-    logger.add(
+    defaultLogger.add(
       new winston.transports.File({
         filename: './logs/error.log',
         handleExceptions: true,
         level: 'error'
       })
     );
-    logger.add(
+    defaultLogger.add(
       new winston.transports.File({
-        filename: './logs/error.log',
+        filename: './logs/combined.log',
         handleExceptions: true,
-        level: 'error'
+        level: 'combined'
       })
     );
-
-
   }
 }
